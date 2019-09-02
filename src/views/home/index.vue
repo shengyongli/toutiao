@@ -2,7 +2,7 @@
   <!-- 最外层导航 -->
   <el-container>
     <!-- 左侧导航 -->
-    <el-aside  style="width:201px;">
+    <el-aside style="width:201px;background-color: #323745; ">
       <!-- 左侧导航组件 -->
       <layout-aside></layout-aside>
     </el-aside>
