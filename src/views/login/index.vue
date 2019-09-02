@@ -94,9 +94,9 @@ export default {
             .then(result => {
               // console.log(result.data.data.token)
               // 放到前端的缓存中
-              window.localStorage.setItem('user-token', result.data.data.token)
+              window.localStorage.setItem('user-token', result.data.token)
               // 编程式导航
-              console.log(result.data.data.token)
+              console.log(result.data.token)
               this.$router.push('/home') // 登录成功 跳转到home页
             })
             .catch(() => {
