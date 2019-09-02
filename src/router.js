@@ -9,22 +9,21 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
+      path: '/login',
+      component: Login
+    },
+    {
       path: '/',
-      redirect: '/login'
+      redirect: '/home'
     },
     {
       path: '/home',
       name: 'home',
       component: Home,
       children: [{
-        path: '', // 默认的二级路由地址，path为空串
+        path: '', // 默认的二级路由  的地址 path为空串
         component: Main
       }]
-
-    },
-    {
-      path: '/login',
-      component: Login
     }
     // {
     //   path: '/about',
