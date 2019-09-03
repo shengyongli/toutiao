@@ -6,11 +6,21 @@
       <template slot="title">评论列表</template>
     </bread-crumb>
     <el-table :data="list">
-      <el-table-column prop="name" label="标题" width="550"></el-table-column>
-      <el-table-column prop="name" label="评论状态"></el-table-column>
-      <el-table-column prop="address" label="总评论数"></el-table-column>
-      <el-table-column prop="name" label="粉丝评论数"></el-table-column>
-      <el-table-column prop="address" label="操作"></el-table-column>
+      <el-table-column prop="title" label="标题" width="550"></el-table-column>
+      <!-- formatter是el-table-column属性 -->
+      <el-table-column :formatter="formatter" prop="comment_status" label="评论状态"></el-table-column>
+      <el-table-column prop="total_comment_count" label="总评论数"></el-table-column>
+      <el-table-column prop="fans_comment_count" label="粉丝评论数"></el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="obj">
+          <el-button size="small" type="text">修改评论</el-button>
+          <el-button
+            size="small"
+            type="text"
+            :style="{color:obj.row.comment_status?'#E6A23C' :'#409EFF'}"
+          >{{obj.row.comment_status?'关闭评论':'打开评论'}}</el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </el-card>
 </template>
@@ -19,29 +29,24 @@
 export default {
   data () {
     return {
-      list: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }
-      ]
+      list: []
     }
+  },
+  methods: {
+    formatter (row) {
+      return row.comment_status ? '正常' : '关闭'
+    },
+    getComments () {
+      this.$axios({
+        url: '/articles',
+        params: { response_type: 'comment' }
+      }).then(result => {
+        this.list = result.data.results
+      })
+    }
+  },
+  created () {
+    this.getComments()
   }
 }
 </script>
