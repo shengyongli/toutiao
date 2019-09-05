@@ -5,28 +5,33 @@
     </bread-crumb>
     <el-form style="margin-left:40px">
       <el-form-item label="文章状态：">
-        <el-radio-group>
-          <el-radio>全部</el-radio>
-          <el-radio>草稿</el-radio>
-          <el-radio>待审核</el-radio>
-          <el-radio>审核通过</el-radio>
-          <el-radio>审核失败</el-radio>
+        <el-radio-group @change="changeCondition" v-model="searchForm.status">
+          <el-radio :label="5">全部</el-radio>
+          <el-radio :label="0">草稿</el-radio>
+          <el-radio :label="1">待审核</el-radio>
+          <el-radio :label="2">审核通过</el-radio>
+          <el-radio :label="3">审核失败</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="频道列表：">
-        <el-select value></el-select>
+        <el-select @change="changeCondition" v-model="searchForm.channel_id">
+          <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="时间选择：">
         <el-date-picker
-          type="datetimerange"
-          range-separator="至"
+          @change="changeCondition"
+          type="daterange"
+          value-format="yyyy-MM-dd"
+          v-model="searchForm.dataRange"
+          range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
     </el-form>
     <!-- 内容列表结构 -->
-    <div class="total-info">共找到111111条符合条件的内容</div>
+    <div class="total-info">共找到{{page.total}}条符合条件的内容</div>
     <div class="article-list">
       <!-- 循环项 -->
       <div class="article-item" v-for="(item,index) in list" :key="index">
@@ -58,20 +63,56 @@ export default {
   data () {
     return {
       list: [],
-      defaultImg: require('../../assets/img/avatar.jpg')
+      defaultImg: require('../../assets/img/avatar.jpg'),
+      searchForm: {
+        status: 5,
+        channel_id: null,
+        dataRange: []
+      },
+      channels: [], // 频道列表数据
+      page: {
+        page: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   methods: {
-    getArticles () {
+    changeCondition () {
+      let params = {
+        status: this.searchForm.status === 5 ? null : this.searchForm.status,
+        channel_id: this.searchForm.channel_id,
+        begin_pubdate:
+          this.searchForm.dataRange.length > 0
+            ? this.searchForm.dataRange[0]
+            : null,
+        end_pubdate:
+          this.searchForm.dataRange.length > 1
+            ? this.searchForm.dataRange[1]
+            : null
+      }
+      this.getArticles(params)
+    },
+    getArticles (params) {
       this.$axios({
-        url: '/articles'
+        url: '/articles',
+        params
       }).then(result => {
         this.list = result.data.results
       })
+    },
+    getChannels () {
+      this.$axios({
+        url: '/channels'
+      }).then(result => {
+        this.channels = result.data.channels
+      })
     }
   },
+
   created () {
     this.getArticles()
+    this.getChannels()
   }
 }
 </script>
