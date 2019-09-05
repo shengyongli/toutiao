@@ -64,18 +64,43 @@ export default {
     }
   },
   methods: {
-    publish () {
-      this.$refs.publishForm.validate(isOk => {
-        this.$axios({
-          url: '/articles'
-        })
-      })
-    },
+    // publish () {
+    //   this.$refs.publishForm.validate(isOk => {
+    //     if (isOk) {
+    //       this.$axios({
+    //         url: '/articles',
+    //         method: 'post',
+    //         params: {
+    //           draft: false // draft 为true时 就是草稿
+    //         },
+    //         data: this.formData
+    //       }).then(() => {
+    //         this.$router.push('/home/articles')
+    //       })
+    //     }
+    //   })
+    // },
     getChannels () {
       this.$axios({
         url: '/channels'
       }).then(result => {
         this.channels = result.data.channels
+      })
+    },
+    //  发布文章
+    publish () {
+      this.$refs.publishForm.validate(isOK => {
+        if (isOK) {
+          this.$axios({
+            url: '/articles',
+            method: 'post',
+            // params: { draft: false }, // draft 为true时 就是草稿
+            data: this.formData
+          }).then(() => {
+            //   编程式导航
+            this.$router.push('/home/articles') // 跳转到文章列表页面
+          })
+        }
       })
     }
   },
