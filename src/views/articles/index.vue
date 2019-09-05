@@ -88,6 +88,17 @@ export default {
     }
   },
   methods: {
+    delItem (item) {
+      this.$confirm(`您确定要删除此文章吗`, '提示').then(() => {
+        this.$axios({
+          method: 'delete',
+          // item.id 长度超过安全限制，要转成bigNumber类型，然后toString（）转成正常字符串类型
+          url: `/articles/${item.id.toString()}`
+        }).then(() => {
+          this.getConditionArticle() // 获取筛选的数据
+        })
+      })
+    },
     changePage (newPage) {
       this.page.page = newPage
       this.getConditionArticle()
