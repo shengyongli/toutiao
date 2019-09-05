@@ -40,7 +40,7 @@
           <img :src="item.cover.images.length?item.cover.images[0]:defaultImg" alt />
           <div class="info">
             <span class="title">{{item.title}}</span>
-            <el-tag :type=" item.status|statusType" style="width:60px">{{item.status | statusText}}</el-tag>
+            <el-tag :type="item.status|statusType" style="width:60px">{{item.status |statusText}}</el-tag>
             <span class="date">{{item.pubdate}}</span>
           </div>
         </div>
@@ -55,6 +55,16 @@
         </div>
       </div>
     </div>
+    <el-row type="flex" justify="center" style="magin:10px 0">
+      <el-pagination
+        @current-change="changePage"
+        :current-page="page.page"
+        :page-size="page.pageSize"
+        :total="page.total"
+        background
+        layout="prev,pager,next"
+      ></el-pagination>
+    </el-row>
   </el-card>
 </template>
 
@@ -78,7 +88,15 @@ export default {
     }
   },
   methods: {
+    changePage (newPage) {
+      this.page.page = newPage
+      this.getConditionArticle()
+    },
     changeCondition () {
+      this.page.page = 1
+      this.getConditionArticle()
+    },
+    getConditionArticle () {
       let params = {
         status: this.searchForm.status === 5 ? null : this.searchForm.status,
         channel_id: this.searchForm.channel_id,
@@ -89,7 +107,9 @@ export default {
         end_pubdate:
           this.searchForm.dataRange.length > 1
             ? this.searchForm.dataRange[1]
-            : null
+            : null,
+        page: this.page.page,
+        per_page: this.page.pageSize
       }
       this.getArticles(params)
     },
@@ -99,6 +119,7 @@ export default {
         params
       }).then(result => {
         this.list = result.data.results
+        this.page.total = result.data.total_count
       })
     },
     getChannels () {
@@ -113,6 +134,38 @@ export default {
   created () {
     this.getArticles()
     this.getChannels()
+  },
+  filters: {
+    //   定义一个过滤器 过滤状态
+    statusText: function (value) {
+      switch (value) {
+        case 0:
+          return '草稿'
+        case 1:
+          return '待审核'
+        case 2:
+          return '已发表'
+        case 3:
+          return '审核失败'
+        default:
+          break
+      }
+    },
+    // 定义类型过滤器
+    statusType: function (value) {
+      switch (value) {
+        case 0:
+          return 'warning'
+        case 1:
+          return 'info'
+        case 2:
+          return 'success'
+        case 3:
+          return 'danger'
+        default:
+          break
+      }
+    }
   }
 }
 </script>
