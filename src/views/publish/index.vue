@@ -25,7 +25,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button @click="publish" type="primary">发表文章</el-button>
+        <el-button @click="publish(false)" type="primary">发表文章</el-button>
         <el-button>存入草稿</el-button>
       </el-form-item>
     </el-form>
@@ -72,13 +72,14 @@ export default {
       })
     },
     //  发布文章
-    publish () {
+    publish (draft) {
       this.$refs.publishForm.validate(isOK => {
         if (isOK) {
+          let { articleId } = this.$route.params
           this.$axios({
-            url: '/articles',
-            method: 'post',
-            params: { draft: false }, // draft 为true时 就是草稿
+            url: articleId ? `/articles/${articleId}` : '/articles',
+            method: articleId ? 'put' : 'post',
+            params: { draft }, // draft 为true时 就是草稿
             data: this.formData
           }).then(() => {
             //   编程式导航
