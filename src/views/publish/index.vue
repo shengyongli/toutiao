@@ -38,6 +38,32 @@
 <script>
 export default {
   data () {
+    let func = function (rule, value, callBack) {
+      if (value.type === 1) {
+        value.images.length === 1 && value.images[0]
+          ? callBack()
+          : callBack(new Error('对不起,您未设置单图的封面'))
+      } else if (value.type === 3) {
+        if (
+          value.images.length === 3 &&
+          value.images[0] &&
+          value.images[1] &&
+          value.images[2]
+        ) {
+          callBack()
+        } else {
+          callBack(new Error('对不起,您未设置全三图的封面'))
+        }
+        // if(value.images.length===3&& !value.images.some(item => !item))
+      } else {
+        // 无图或者自动 []
+        if (value.images.length > 0) {
+          callBack(new Error('对不起,您的封面设置有误'))
+        } else {
+          callBack()
+        }
+      }
+    }
     return {
       channels: [],
       formData: {
@@ -50,7 +76,17 @@ export default {
         channel_id: null
       },
       publishRules: {
-        title: [{ required: true, message: '标题不能为空' }],
+        title: [
+          {
+            required: true,
+            message: '标题不能为空'
+          },
+          {
+            min: 2,
+            max: 30,
+            message: '标题为2到30之间'
+          }
+        ],
         content: [
           {
             required: true,
@@ -61,6 +97,11 @@ export default {
           {
             required: true,
             message: '频道不能为空'
+          }
+        ],
+        cover: [
+          {
+            validator: func // 自定义校验函数
           }
         ]
       }
