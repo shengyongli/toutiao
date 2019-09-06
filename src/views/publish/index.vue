@@ -8,10 +8,10 @@
         <el-input v-model="formData.title" style="width:450px"></el-input>
       </el-form-item>
       <el-form-item prop="content" label="内容">
-        <quill-editor v-model="formData.content" style="width:450px"></quill-editor>
+        <quill-editor v-model="formData.content" style="height:400px;width:700px;margin-left:50px"></quill-editor>
       </el-form-item>
-      <el-form-item label="封面">
-        <el-radio-group v-model="formData.cover.type">
+      <el-form-item label="封面" style="margin-top:120px" prop="cover">
+        <el-radio-group v-model="formData.cover.type" @change="changeCoverType">
           <el-radio :label="1">单图</el-radio>
           <el-radio :label="3">三图</el-radio>
           <el-radio :label="0">无图</el-radio>
@@ -26,7 +26,7 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="publish(false)" type="primary">发表文章</el-button>
-        <el-button>存入草稿</el-button>
+        <el-button @click="publish(true)">存入草稿</el-button>
       </el-form-item>
     </el-form>
   </el-card>
@@ -94,6 +94,15 @@ export default {
       }).then(result => {
         this.formData = result.data
       })
+    },
+    changeCoverType () {
+      if (this.formData.cover.type === 1) {
+        this.formData.cover.images = [''] // 有一张封面
+      } else if (this.formData.cover.type === 3) {
+        this.formData.cover.images = ['', '', ''] // 有三张封面
+      } else {
+        this.formData.cover.images = [] // 自动或无
+      }
     }
   },
   created () {

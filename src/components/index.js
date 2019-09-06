@@ -12,6 +12,6 @@ export default {
     Vue.component('layout-aside', layoutAside) // 注册左侧导航全局组件
     Vue.component('layout-header', layoutHeader) // 注册头部全局组件
     Vue.component('bread-crumb', breadCrumb)
-    Vue.commponent('quill-editor', quillEditor)
+    Vue.component('quill-editor', quillEditor)
   }
 }
