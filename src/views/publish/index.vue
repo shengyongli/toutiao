@@ -19,7 +19,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item>
-        <cover-image :images="formData.cover.images"></cover-image>
+        <cover-image @onClickImg="receiveImg" :images="formData.cover.images"></cover-image>
       </el-form-item>
       <el-form-item prop="channel_id" label="频道">
         <el-select v-model="formData.channel_id">
@@ -67,6 +67,21 @@ export default {
     }
   },
   methods: {
+    receiveImg (url, index) {
+      // this.formData.cover.images = this.formData.cover.images.map(function (
+      //   item,
+      //   i
+      // ) {
+      //   if (i === index) {
+      //     return url //匹配到i===index 返回最新的地址
+      //   }
+      //   return item //其他项不变
+      // })
+      // 炫技模式
+      this.formData.cover.images = this.formData.cover.images.map((item, i) =>
+        i === index ? url : item
+      )
+    },
     getChannels () {
       this.$axios({
         url: '/channels'
