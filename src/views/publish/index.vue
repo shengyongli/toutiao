@@ -64,22 +64,6 @@ export default {
     }
   },
   methods: {
-    // publish () {
-    //   this.$refs.publishForm.validate(isOk => {
-    //     if (isOk) {
-    //       this.$axios({
-    //         url: '/articles',
-    //         method: 'post',
-    //         params: {
-    //           draft: false // draft 为true时 就是草稿
-    //         },
-    //         data: this.formData
-    //       }).then(() => {
-    //         this.$router.push('/home/articles')
-    //       })
-    //     }
-    //   })
-    // },
     getChannels () {
       this.$axios({
         url: '/channels'
@@ -94,7 +78,7 @@ export default {
           this.$axios({
             url: '/articles',
             method: 'post',
-            // params: { draft: false }, // draft 为true时 就是草稿
+            params: { draft: false }, // draft 为true时 就是草稿
             data: this.formData
           }).then(() => {
             //   编程式导航
@@ -102,10 +86,22 @@ export default {
           })
         }
       })
+    },
+    getArticleById (articleId) {
+      this.$axios({
+        url: `/articles/${articleId}`
+      }).then(result => {
+        this.formData = result.data
+      })
     }
   },
   created () {
-    this.getChannels()
+    this.getChannels() // 获取频道
+    let { articleId } = this.$route.params // 获取id
+    if (articleId) {
+      // 如果存在 说明是修改文章 通过id 获取当前的文章数据
+      this.getArticleById(articleId)
+    }
   }
 }
 </script>
