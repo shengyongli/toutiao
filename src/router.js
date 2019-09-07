@@ -2,12 +2,17 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/home'
 import Login from './views/login'
+import NotFound from './views/404'
 import Main from './views/home/main'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '*', // 匹配所有找不到家的孩子
+      component: NotFound
+    },
     {
       path: '/login',
       component: Login
