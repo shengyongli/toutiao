@@ -5,7 +5,8 @@
     </bread-crumb>
     <div>
       <el-upload action :http-request="uploadHeadImg" :show-file-list="false">
-        <img class="head-image" :src="userInfo.photo" alt />
+        <!-- 短路表达式 -->
+        <img class="head-image" :src="userInfo.photo||defaultImg" alt />
       </el-upload>
     </div>
     <el-form ref="userInfo" :model="userInfo" :rules="userRules" label-width="100px">
@@ -29,10 +30,12 @@
 </template>
 
 <script>
+import eventBus from '../../utils/events' // 公共的vue实例
 export default {
   data () {
     return {
       loading: false,
+      defaultImg: require('../../assets/img/avatar.jpg'),
       userInfo: {
         name: '',
         intro: '',
@@ -73,6 +76,7 @@ export default {
         data
       }).then(() => {
         this.loading = false
+        eventBus.$emit('updateUserInfo') // 相当于打出了一个电话 电话号是updateUserInfo
         this.getUserInfo()
       })
     },
@@ -95,6 +99,8 @@ export default {
               type: 'success',
               message: '恭喜您保存用户信息成功'
             })
+            // 成功之后 要通知 头部去更新数据
+            eventBus.$emit('updateUserInfo') // 相当于打出了一个电话 电话号是updateUserInfo
           })
         }
       })

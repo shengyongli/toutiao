@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import eventBus from '../../utils/events' // 公共的vue实例
 export default {
   data () {
     return {
@@ -35,7 +36,7 @@ export default {
         url: '/user/profile'
       }).then(result => {
         this.userInfo = result.data
-        console.log(this.userInfo)
+        // console.log(this.userInfo)
       })
     },
     // 点击菜单项触发的方法
@@ -51,6 +52,10 @@ export default {
     }
   },
   created () {
+    // 听电话  => 做动作
+    eventBus.$on('updateUserInfo', () => {
+      this.getUserInfo()
+    })
     this.getUserInfo()
   }
 }
