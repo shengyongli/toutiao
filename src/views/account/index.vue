@@ -1,20 +1,25 @@
 <template>
-  <el-card>
+  <el-card v-loading="loading">
     <bread-crumb slot="header">
       <template slot="title">账户信息</template>
     </bread-crumb>
+    <div>
+      <el-upload action :http-request="uploadHeadImg" :show-file-list="false">
+        <img class="head-image" :src="userInfo.photo" alt />
+      </el-upload>
+    </div>
     <el-form ref="userInfo" :model="userInfo" :rules="userRules" label-width="100px">
       <el-form-item label="用户名" prop="name">
-        <el-input v-model="userInfo.name" style="width:400px"></el-input>
+        <el-input v-model="userInfo.name" style="width:300px"></el-input>
       </el-form-item>
       <el-form-item label="简介" prop="intro">
-        <el-input v-model="userInfo.intro" style="width:400px"></el-input>
+        <el-input v-model="userInfo.intro" style="width:300px"></el-input>
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
-        <el-input v-model="userInfo.email" style="width:400px"></el-input>
+        <el-input v-model="userInfo.email" style="width:300px"></el-input>
       </el-form-item>
       <el-form-item label="手机号">
-        <el-input v-model="userInfo.mobile" disabled style="width:400px"></el-input>
+        <el-input v-model="userInfo.mobile" disabled style="width:300px"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="saveUserInfo" type="primary">保存</el-button>
@@ -27,6 +32,7 @@
 export default {
   data () {
     return {
+      loading: false,
       userInfo: {
         name: '',
         intro: '',
@@ -56,6 +62,20 @@ export default {
     }
   },
   methods: {
+    // 上传头像
+    uploadHeadImg (params) {
+      this.loading = true
+      let data = new FormData()
+      data.append('photo', params.file)
+      this.$axios({
+        url: '/user/photo',
+        method: 'patch',
+        data
+      }).then(() => {
+        this.loading = false
+        this.getUserInfo()
+      })
+    },
     getUserInfo () {
       this.$axios({
         url: '/user/profile'
@@ -86,5 +106,12 @@ export default {
 }
 </script>
 
-<style>
+<style lang='less' scoped>
+.head-image {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin-left: 500px;
+}
 </style>
