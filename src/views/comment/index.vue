@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { getComments, openOrClose } from '../../api/comment.js'
 export default {
   data () {
     return {
@@ -49,36 +50,63 @@ export default {
     }
   },
   methods: {
-    openOrClose (row) {
+    // openOrClose (row) {
+    //   let mess = row.comment_status ? '关闭' : '打开';
+    //   this.$confirm(`您是否要${mess}评论`, '提示').then(() => {
+    //     this.$axios({
+    //       method: 'put',
+    //       url: '/comments/status',
+    //       params: { article_id: row.id.toString() },
+    //       data: { allow_comment: !row.comment_status }
+    //     }).then(result => {
+    //       this.getComments()
+    //     })
+    //   })
+    // },
+    async openOrClose (row) {
       let mess = row.comment_status ? '关闭' : '打开'
-      this.$confirm(`您是否要${mess}评论`, '提示').then(() => {
-        this.$axios({
-          method: 'put',
-          url: '/comments/status',
-          params: { article_id: row.id.toString() },
-          data: { allow_comment: !row.comment_status }
-        }).then(result => {
-          this.getComments()
-        })
-      })
+      await this.$confirm(`您是否要${mess}评论`, '提示')
+      // await this.$axios({
+      //   method: 'put',
+      //   url: '/comments/status',
+      //   params: { article_id: row.id.toString() },
+      //   data: { allow_comment: !row.comment_status }
+      // })
+      await openOrClose(
+        { article_id: row.id.toString() },
+        { allow_comment: !row.comment_status }
+      )
+      this.getComments()
     },
     formatter (row) {
       return row.comment_status ? '正常' : '关闭'
     },
-    getComments () {
+    async getComments () {
       this.loading = true
-      this.$axios({
-        url: '/articles',
-        params: {
-          response_type: 'comment',
-          page: this.page.page,
-          per_page: this.page.pageSize
-        }
-      }).then(result => {
-        this.loading = false
-        this.list = result.data.results
-        this.page.total = result.data.total_count
+      // this.$axios({
+      //   url: '/articles',
+      //   params: { response_type: 'comment', page: this.page.page, per_page: this.page.pageSize }
+      // }).then(result => {
+      //   this.loading = false // 响应数据之后关系
+      //   this.list = result.data.results
+      //   this.page.total = result.data.total_count
+      // })
+      // let result = await this.$axios({
+      //   url: '/articles',
+      //   params: {
+      //     response_type: 'comment',
+      //     page: this.page.page,
+      //     per_page: this.page.pageSize
+      //   }
+      // })
+      let result = await getComments({
+        response_type: 'comment',
+        page: this.page.page,
+        per_page: this.page.pageSize
       })
+      this.loading = false
+      this.list = result.data.results
+      this.page.total = result.data.total_count
     },
     changePage (newPage) {
       this.page.page = newPage

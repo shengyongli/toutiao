@@ -1,7 +1,11 @@
 <template>
   <el-row class="layout-header" type="flex" justify="space-between">
     <el-col class="left" :span="8">
-      <i class="el-icon-s-unfold icon"></i>
+      <i
+        @click="openOrClose"
+        :class="{'el-icon-s-unfold':close,'el-icon-s-fold':!close}"
+        class="icon"
+      ></i>
       <span>江苏传智播客教育科技股份有限公司</span>
     </el-col>
     <el-col class="right" :span="3">
@@ -26,11 +30,18 @@ import eventBus from '../../utils/events' // 公共的vue实例
 export default {
   data () {
     return {
+      close: false, // 默认展开
       userInfo: {},
       defaultImg: require('../../assets/img/avatar.jpg')
     }
   },
   methods: {
+    // 展开或者折叠
+    openOrClose () {
+      this.close = !this.close
+      eventBus.$emit('openOrClose', this.close) // 拨号
+    },
+    // 获取用户信息
     getUserInfo () {
       this.$axios({
         url: '/user/profile'

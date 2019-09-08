@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import { getChannels, publish, getArticleById } from '../../api/publish'
+import api from '../../constant/api'
 export default {
   data () {
     let func = function (rule, value, callBack) {
@@ -123,36 +125,75 @@ export default {
         i === index ? url : item
       )
     },
-    getChannels () {
-      this.$axios({
-        url: '/channels'
-      }).then(result => {
-        this.channels = result.data.channels
-      })
+    // getChannels () {
+    //   this.$axios({
+    //     url: '/channels'
+    //   }).then(result => {
+    //     this.channels = result.data.channels
+    //   })
+    // },
+    async getChannels () {
+      let result = await getChannels()
+      this.channels = result.data.channels
     },
     //  发布文章
+    // publish (draft) {
+    //   this.$refs.publishForm.validate(isOK => {
+    //     if (isOK) {
+    //       let { articleId } = this.$route.params
+    //       this.$axios({
+    //         url: articleId ? `/articles/${articleId}` : '/articles',
+    //         method: articleId ? 'put' : 'post',
+    //         params: { draft }, // draft 为true时 就是草稿
+    //         data: this.formData
+    //       }).then(() => {
+    //         //   编程式导航
+    //         this.$router.push('/home/articles') // 跳转到文章列表页面
+    //       })
+    //     }
+    //   })
+    // },
+
+    // publish (draft) {
+    //   this.$refs.publishForm.validate(async isOK => {
+    //     if (isOK) {
+    //       let { articleId } = this.$route.params
+    //       await publish({
+    //         url: articleId ? `/${api.API_ARTICLES}/${articleId}` : '/articles',
+    //         method: articleId ? 'put' : 'post',
+    //         params: { draft }, // draft 为true时 就是草稿
+    //         data: this.formData
+    //       })
+    //       //   编程式导航
+    //       this.$router.push('/home/articles') // 跳转到文章列表页
+    //     }
+    //   })
+    // },
     publish (draft) {
-      this.$refs.publishForm.validate(isOK => {
+      this.$refs.publishForm.validate(async isOK => {
         if (isOK) {
-          let { articleId } = this.$route.params
-          this.$axios({
-            url: articleId ? `/articles/${articleId}` : '/articles',
+          // 只有校验成功了 才去管是新增还是修改
+          let { articleId } = this.$route.params // 获取id
+          await publish({
+            url: articleId ? `${api.API_ARTICLES}/${articleId}` : '/articles',
             method: articleId ? 'put' : 'post',
             params: { draft }, // draft 为true时 就是草稿
             data: this.formData
-          }).then(() => {
-            //   编程式导航
-            this.$router.push('/home/articles') // 跳转到文章列表页面
           })
+          this.$router.push('/home/articles') // 跳转到文章列表页面
         }
       })
     },
-    getArticleById (articleId) {
-      this.$axios({
-        url: `/articles/${articleId}`
-      }).then(result => {
-        this.formData = result.data
-      })
+    // getArticleById (articleId) {
+    //   this.$axios({
+    //     url: `/articles/${articleId}`
+    //   }).then(result => {
+    //     this.formData = result.data
+    //   })
+    // },
+    async getArticleById (articleId) {
+      let result = await getArticleById(articleId)
+      this.formData = result.data
     },
     changeCoverType () {
       if (this.formData.cover.type === 1) {
